@@ -1,12 +1,15 @@
 import requests
 import yaml
-from flask import Flask, render_template
+import json
+from flask import Flask, Response, render_template
 
 app = Flask(__name__, template_folder="../webapp", static_folder="../webapp/dist")
 
-with open("application.yaml", 'r') as config:
+CONFIG = None
+
+with open("application.yml", 'r') as config:
     try:
-        print yaml.load(config)
+        CONFIG = yaml.load(config)
     except yaml.YAMLError as exc:
         print exc 
 
@@ -17,7 +20,14 @@ def index():
 
 @app.route('/login')
 def login():
-    pass
+    data = {
+        "error": True
+    }
+
+    resp = Response(response=json.dumps(data),
+                    status=200, \
+                    mimetype="application/json")
+    return resp
 
 @app.route('/callback')
 def callback():

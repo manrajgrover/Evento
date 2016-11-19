@@ -79,6 +79,10 @@ app.controller("navController", /*@ngInject*/function($scope, $http, $location, 
 
   $http.get("login").success(function(data) {
 
+    if (data.error === true) {
+      return;
+    }
+
     let session = {
       name: data.name,
       email: data.email,
@@ -90,8 +94,9 @@ app.controller("navController", /*@ngInject*/function($scope, $http, $location, 
 
     $scope.session = session;
     $location.path("/profile");
+
   }).error(function() {
-    self.authenticated = false;
+    //self.authenticated = false;
   });
 
   $scope.logout = function() {
