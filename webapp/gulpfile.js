@@ -5,7 +5,6 @@ const browserify = require('browserify');
 const minifyCSS = require('gulp-minify-css');
 const uglify = require('gulp-uglify');
 const concat = require('gulp-concat');
-const purify = require('gulp-purifycss');
 const buffer = require('vinyl-buffer');
 const source = require('vinyl-source-stream');
 const ngAnnotate = require('gulp-ng-annotate');
@@ -44,7 +43,6 @@ gulp.task('css', () => {
       'node_modules/selectize/dist/css/selectize.bootstrap3.css',
       'src/css/*.css'
     ])
-    .pipe(purify(['dist/js/*.js', 'dist/views/*.html']))
     .pipe(minifyCSS({keepSpecialComments : 0}))
     .pipe(concat('style.min.css'))
     .pipe(gulp.dest('./dist/css'));

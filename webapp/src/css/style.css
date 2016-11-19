@@ -2,3 +2,8 @@
   width: 100px;
   transition: 2s;
 }
+
+.brand-navbar {
+  position: relative;
+  top: -5px;
+}
