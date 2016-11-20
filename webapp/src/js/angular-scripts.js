@@ -64,7 +64,7 @@ app.run(/*@ngInject*/function($rootScope, $timeout, $location, sessionService){
 
 
 app.controller("homeController", /*@ngInject*/function($scope) {
-
+  
   $scope.login = () => {
     window.location.replace("login");
   }
