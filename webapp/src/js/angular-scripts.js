@@ -2,7 +2,7 @@
 
 const angular = require('angular');
 
-const app = angular.module("app", [require('angular-route')]);
+const app = angular.module("app", [require('angular-route'), require('ng-infinite-scroll')]);
 
 app.config(function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -52,7 +52,6 @@ app.run(/*@ngInject*/function($rootScope, $timeout, $location, sessionService){
   $rootScope.$on('$routeChangeSuccess', function() {
     $timeout(function() {
       $rootScope.stateIsLoading = false;
-      console.log("Hello stopping");
     }, 2000);
   });
 
@@ -64,7 +63,7 @@ app.run(/*@ngInject*/function($rootScope, $timeout, $location, sessionService){
 
 
 app.controller("homeController", /*@ngInject*/function($scope) {
-  
+
   $scope.login = () => {
     window.location.replace("login");
   }
@@ -80,12 +79,12 @@ app.controller("navController", /*@ngInject*/function($scope, $http, $location, 
   $http.get("login").success(function(data) {
 
     if (data.error === true) {
+      $location.path("/");
       return;
     }
 
     let session = {
       name: data.name,
-      email: data.email,
       username: data.username,
       authenticated: true
     };
@@ -96,7 +95,7 @@ app.controller("navController", /*@ngInject*/function($scope, $http, $location, 
     $location.path("/profile");
 
   }).error(function() {
-    //self.authenticated = false;
+    console.log("Error occured while getting login");
   });
 
   $scope.logout = function() {
@@ -105,14 +104,70 @@ app.controller("navController", /*@ngInject*/function($scope, $http, $location, 
       $scope.session = {};
       $location.path("/");
     }).error(function(data) {
-      self.authenticated = false;
+      sessionService.resetSession();
       $location.path("/");
     });
   };
 
 });
 
-app.controller("profileController", /*@ngInject*/function($scope, $location, $http, sessionService) {
+app.controller("profileController", /*@ngInject*/function($scope, $location, $http, sessionService, Github) {
   let session = sessionService.getSession();
   $scope.session = session;
+
+  $scope.github = new Github();
+
+  $http.get("events").success(function(data) {
+
+    if (data.error === true) {
+      $location.path("/");
+      return;
+    }
+
+    $scope.events = data;
+
+  }).error(function() {
+    console.log("Error occured while getting login");
+  });
+});
+
+app.factory('Github', function($http) {
+  const Github = function() {
+    this.items = [];
+    this.busy = false;
+    this.page = 1;
+  };
+
+  Github.prototype.nextPage = function() {
+
+    if (this.busy) {
+      return;
+    }
+
+    this.busy = true;
+    const url = `/events?page=${this.page}`;
+
+    $http.get(url).success(function(data) {
+
+      if (data.hasOwnProperty("error")  == true &&
+          data.hasOwnProperty("type") == true &&
+          data['type'] == 'END') {
+        this.busy = true;
+        return;
+      }
+      
+      let items = data;
+
+      for (let i = 0; i < items.length; i++) {
+        this.items.push(items[i]);
+      }
+
+      this.page = this.page + 1;
+      this.busy = false;
+    }.error(function() {
+      this.busy = true;
+    }).bind(this));
+  };
+
+  return Github;
 });
