@@ -5,7 +5,7 @@ import urlparse
 from pprint import pprint
 from flask import Flask, Response, render_template, request, redirect, url_for, session
 
-app = Flask(__name__, template_folder="../webapp", static_folder="../webapp/dist")
+app = Flask(__name__, template_folder = "../webapp", static_folder = "../webapp/dist")
 
 CONFIG = None
 
@@ -18,16 +18,30 @@ with open("application.yml", 'r') as config:
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html', client_id=CONFIG['client_id'])
+    return render_template('index.html', client_id = CONFIG['client_id'])
 
 @app.route('/login')
 def login():
-    
 
-    resp = {
-        "username": session['username'],
-        "name": session['name']
-    }
+    if (session.get('username') is not None) and (session.get('name') is not None):
+        resp = {
+            "error": False,
+            "username": session['username'],
+            "name": session['name']
+        }
+
+        return Response(response=json.dumps(resp),
+                        status=200, \
+                        mimetype="application/json")
+    else:
+        resp = {
+            "error": True,
+            "message": "Please authorize"
+        }
+
+        return Response(response = json.dumps(resp),
+                        status = 401, \
+                        mimetype = "application/json")
 
 @app.route('/callback')
 def callback():
@@ -48,13 +62,13 @@ def callback():
 
         if 'repo,user' in scope:
 
-            auth_val = "token {token}".format(token=access_token)
+            auth_val = "token {token}".format(token = access_token)
 
             header = {
                 "Authorization": auth_val
             }
 
-            r = requests.get('https://api.github.com/user', headers=header)
+            r = requests.get('https://api.github.com/user', headers = header)
             result = r.json()
 
             session['username'] = result['login']
@@ -66,15 +80,81 @@ def callback():
             
             return redirect(url_for('index'))
         else:
-            pass
-    else:
-        pass
-    return "hello world"
+            resp = {
+                "error": True,
+                "message": "Permissions not given"
+            }
 
-@app.route('/logout')
+            return Response(response=resp,
+                        status=403, \
+                        mimetype="application/json")
+    else:
+        resp = {
+            "error": True,
+            "message": "Unauthorized"
+        }
+        
+        return Response(response = resp,
+                    status = 401, \
+                    mimetype = "application/json")
+
+@app.route('/events', methods = ['GET'])
+def events():
+
+    if (session.get('username') is not None) and (session.get('name') is not None):
+        username = session['username']
+        access_token = session['token']
+
+        auth_val = "token {token}".format(token = access_token)
+
+        header = {
+            "Authorization": auth_val
+        }
+
+        page = request.args.get('page') if request.args.get('page') is not None else 1
+
+        print page
+
+        events_url = 'https://api.github.com/users/{username}/events?page={page}'.format(username = username, page = page)
+        result = requests.get(events_url, headers = header)
+
+        events = result.json()
+
+        print events
+
+        if result.status_code == requests.codes.ok and len(events):
+
+            return Response(response = json.dumps(events),
+                            status = 200, \
+                            mimetype = "application/json")
+        else:
+            resp = {
+                "error": True,
+                "type": "END",
+                "message": "No more to show"
+            }
+
+            return Response(response = json.dumps(resp),
+                            status = 404, \
+                            mimetype = "application/json")
+
+    else:
+        resp = {
+            "error": True,
+            "message": "Please authorize"
+        }
+
+        return Response(response = json.dumps(resp),
+                        status = 401, \
+                        mimetype = "application/json")
+
+@app.route('/logout', methods = ['POST'])
 def logout():
-    pass
+    session.pop('username', None)
+    session.pop('name', None)
+    session.pop('token', None)
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.secret_key = "HelloWorld"
-    app.run(debug=True)
+    app.run(debug = True)
