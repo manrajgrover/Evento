@@ -51,8 +51,8 @@ def callback():
                                 'client_id': CONFIG['client_id'],
                                 'client_secret': CONFIG['client_secret'],
                                 'code': code
-                                } \
-                            )
+                            } \
+                        )
 
     if response.status_code == requests.codes.ok:
 
@@ -98,6 +98,72 @@ def callback():
                     status = 401, \
                     mimetype = "application/json")
 
+def getEventDetails(data):
+    response = {}
+    print data
+    response['image'] = data['actor']['avatar_url']
+    response['repository'] = data['repo']['name']
+    if data['type'] == "CommitCommentEvent":
+        # message = "Pushed {size} commits to "
+        # response['message'] =
+        response['message'] = "Lorem"
+    elif data['type'] == "CreateEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "DeleteEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "DeploymentEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "DeploymentStatusEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "DownloadEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "FollowEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "ForkEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "ForkApplyEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "GistEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "GollumEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "IssueCommentEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "IssuesEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "LabelEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "MemberEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "MembershipEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "MilestoneEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "PageBuildEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "PublicEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "PullRequestEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "PullRequestReviewEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "PullRequestReviewCommentEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "PushEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "ReleaseEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "RepositoryEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "StatusEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "TeamAddEvent":
+        response['message'] = "Lorem"
+    elif data['type'] == "WatchEvent":
+        response['message'] = "Lorem"
+
+    return response
+
 @app.route('/events', methods = ['GET'])
 def events():
 
@@ -120,11 +186,14 @@ def events():
 
         events = result.json()
 
-        print events
-
         if result.status_code == requests.codes.ok and len(events):
 
-            return Response(response = json.dumps(events),
+            resp = []
+
+            for event in events:
+                resp.append(getEventDetails(event)) 
+            
+            return Response(response = json.dumps(resp),
                             status = 200, \
                             mimetype = "application/json")
         else:
