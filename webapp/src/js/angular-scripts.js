@@ -136,6 +136,7 @@ app.factory('Github', function($http) {
     this.items = [];
     this.busy = false;
     this.page = 1;
+    this.loader = false;
   };
 
   Github.prototype.nextPage = function() {
@@ -145,14 +146,18 @@ app.factory('Github', function($http) {
     }
 
     this.busy = true;
+    this.loader = true;
     const url = `/events?page=${this.page}`;
 
     $http.get(url).success(function(data) {
+      console.log(data);
 
       if (data.hasOwnProperty("error")  == true &&
           data.hasOwnProperty("type") == true &&
           data['type'] == 'END') {
+        console.log("here");
         this.busy = true;
+        this.loader = false;
         return;
       }
       
@@ -164,9 +169,11 @@ app.factory('Github', function($http) {
 
       this.page = this.page + 1;
       this.busy = false;
-    }.error(function() {
+      this.loader = false;
+    }.bind(this)).error(function() {
       this.busy = true;
-    }).bind(this));
+      this.loader = false;
+    }.bind(this));
   };
 
   return Github;

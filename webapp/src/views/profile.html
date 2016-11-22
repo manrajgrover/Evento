@@ -1,6 +1,22 @@
 <div infinite-scroll='github.nextPage()' infinite-scroll-disabled='github.busy' infinite-scroll-distance='1'>
-  <div ng-repeat='item in github.items'>
-    <span class='score'>{{item.type}}</span>
+  <div class="row" ng-repeat='item in github.items'>
+    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+      <img src="{{item.image}}" class="img-thumbnail">
+    </div>
+    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+      <div class="row">
+        {{item.repository}}
+      </div>
+      <div class="row">
+        {{item.message}}
+      </div>
+    </div>
   </div>
-  <div ng-show='reddit.busy'>Loading data...</div>
+  <div ng-show='github.loader'>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+        <img class="loader" src="http://www.downgraf.com/wp-content/uploads/2014/09/01-progress.gif"/>
+      </div>
+    </div>
+  </div>
 </div>
