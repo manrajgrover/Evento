@@ -86,8 +86,8 @@ def callback():
             }
 
             return Response(response=resp,
-                        status=403, \
-                        mimetype="application/json")
+                            status=403, \
+                            mimetype="application/json")
     else:
         resp = {
             "error": True,
@@ -95,20 +95,27 @@ def callback():
         }
         
         return Response(response = resp,
-                    status = 401, \
-                    mimetype = "application/json")
+                        status = 401, \
+                        mimetype = "application/json")
 
 def getEventDetails(data):
     response = {}
     print data
+    response['user_url'] = "https://github.com/{user}".format(user = data['actor']['login'])
     response['image'] = data['actor']['avatar_url']
-    response['repository'] = data['repo']['name']
+
+    repository = data['repo']['name']
+
+    response['repository'] = repository
+    response['repository_url'] = "https://github.com/{repository}".format(repository = repository)
+    response['timestamp'] = data['created_at']
+
     if data['type'] == "CommitCommentEvent":
-        # message = "Pushed {size} commits to "
-        # response['message'] =
-        response['message'] = "Lorem"
+        
+        message = "Made a commit comment '{comment}'".format(comment = data['payload']['comment']['body'])
+        response['message'] = message
     elif data['type'] == "CreateEvent":
-        response['message'] = "Lorem"
+        response['message'] = 
     elif data['type'] == "DeleteEvent":
         response['message'] = "Lorem"
     elif data['type'] == "DeploymentEvent":
