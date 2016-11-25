@@ -74,9 +74,6 @@ def callback():
             session['username'] = result['login']
             session['token'] = access_token
             session['name'] = result['name']
-
-            # events_url = 'https://api.github.com/users/{username}/events'.format(username=username)
-            # events = requests.get(events_url, params=params)
             
             return redirect(url_for('index'))
         else:
@@ -100,7 +97,7 @@ def callback():
 
 def getEventDetails(data):
     response = {}
-    print data
+    
     response['user_url'] = "https://github.com/{user}".format(user = data['actor']['login'])
     response['image'] = data['actor']['avatar_url']
 
@@ -110,18 +107,34 @@ def getEventDetails(data):
     response['repository_url'] = "https://github.com/{repository}".format(repository = repository)
     response['timestamp'] = data['created_at']
 
+    payload = data['payload']
+
     if data['type'] == "CommitCommentEvent":
-        
-        message = "Made a commit comment '{comment}'".format(comment = data['payload']['comment']['body'])
+
+        message = "Made a commit comment '{comment}'".format(comment = payload['comment']['body'])
         response['message'] = message
+        response['message_url'] = payload['comment']['html_url']
+
     elif data['type'] == "CreateEvent":
-        response['message'] = 
+
+        message = "Created a {ref_type}".format(ref_type = payload['ref_type'])
+        response['message'] = message
+
     elif data['type'] == "DeleteEvent":
-        response['message'] = "Lorem"
+
+        message = "Deleted a {ref_type}".format(ref_type = payload['ref_type'])
+        response['message'] = message
+
     elif data['type'] == "DeploymentEvent":
-        response['message'] = "Lorem"
+
+        message = "Deployed {ref} code to {environment}".format(ref = payload['deployment']['ref'], environment = payload['deployment']['environment'])
+        response['message'] = message
+
     elif data['type'] == "DeploymentStatusEvent":
-        response['message'] = "Lorem"
+
+        message = "Deployment status is {ref}".format(ref = payload['deployment']['ref'], environment = payload['deployment']['environment'])
+        response['message'] = message
+
     elif data['type'] == "DownloadEvent":
         response['message'] = "Lorem"
     elif data['type'] == "FollowEvent":
