@@ -97,7 +97,7 @@ def callback():
 
 def getEventDetails(data):
     response = {}
-    
+
     response['user_url'] = "https://github.com/{user}".format(user = data['actor']['login'])
     response['image'] = data['actor']['avatar_url']
 
@@ -131,9 +131,10 @@ def getEventDetails(data):
         response['message'] = message
 
     elif data['type'] == "DeploymentStatusEvent":
+        pass
 
-        message = "Deployment status is {ref}".format(ref = payload['deployment']['ref'], environment = payload['deployment']['environment'])
-        response['message'] = message
+        # message = "Deployment status is {ref}".format(ref = payload['deployment']['ref'], environment = payload['deployment']['environment'])
+        # response['message'] = message
 
     elif data['type'] == "DownloadEvent":
         response['message'] = "Lorem"
@@ -178,9 +179,11 @@ def getEventDetails(data):
     elif data['type'] == "StatusEvent":
         response['message'] = "Lorem"
     elif data['type'] == "TeamAddEvent":
-        response['message'] = "Lorem"
+        message = "{repository} was added to {team}".format(repository = payload['repository']['full_name'], team = payload['team']['name'])
+        response['message'] = message
     elif data['type'] == "WatchEvent":
-        response['message'] = "Lorem"
+        message = "{action} watching the repository".format(action = payload['action'].title())
+        response['message'] = message
 
     return response
 
