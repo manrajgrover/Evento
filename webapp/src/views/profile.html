@@ -11,10 +11,11 @@
       <div class="row">
         <div ng-if="item.message_url">
           <a href="{{item.message_url}}">
-            {item.message}}
+            {{ item.message }}
           </a>
         </div>
         <div ng-if="!item.message_url">
+          {{ item.message }}
         </div>
       </div>
     </div>
