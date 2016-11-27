@@ -6,11 +6,13 @@
     <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
       <div class="row">
         <a href="{{item.repository_url}}" target="_blank" >{{item.repository}}</a>
+      </div>
+      <div class="row">
         <small>{{item.timestamp | date : "MMM d, y 'at' h:mm a"}}</small>
       </div>
       <div class="row">
         <div ng-if="item.message_url">
-          <a href="{{item.message_url}}">
+          <a href="{{item.message_url}}" target="_blank">
             {{ item.message }}
           </a>
         </div>
