@@ -1,14 +1,14 @@
 <div infinite-scroll='github.nextPage()' infinite-scroll-disabled='github.busy' infinite-scroll-distance='1'>
   <div class="row margin-10" ng-repeat='item in github.items'>
     <div class="col-lg-offset-3 col-md-offset-3 col-sm-offset-3 col-xs-offset-3 col-lg-1 col-md-1 col-sm-1 col-xs-1">
-      <img src="{{item.image}}" class="img-thumbnail">
+      <img src="{{ item.image }}" class="img-thumbnail">
     </div>
     <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
       <div class="row">
-        <a href="{{item.repository_url}}" target="_blank" >{{item.repository}}</a>
+        <a href="{{ item.repository_url }}" target="_blank" >{{ item.repository }}</a>
       </div>
       <div class="row">
-        <small>{{item.timestamp | date : "MMM d, y 'at' h:mm a"}}</small>
+        <small>{{ item.timestamp | date : "MMM d, y 'at' h:mm a" }}</small>
       </div>
       <div class="row">
         <div ng-if="item.message_url">
