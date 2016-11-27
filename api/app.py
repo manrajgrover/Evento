@@ -115,7 +115,10 @@ def getEventDetails(data):
         'repository_url'] = "https://github.com/{repository}".format(repository=repository)
     response['timestamp'] = data['created_at']
 
-    payload = data['payload']
+    try:
+        payload = data['payload']
+    except KeyError:
+        payload = None
 
     if data['type'] == "CommitCommentEvent":
 
@@ -141,39 +144,73 @@ def getEventDetails(data):
         response['message'] = message
 
     elif data['type'] == "DeploymentStatusEvent":
-        pass
-
-        # message = "Deployment status is {ref}".format(ref = payload['deployment']['ref'], environment = payload['deployment']['environment'])
-        # response['message'] = message
+        message = "Deployed {ref} to {environment} with {status}".format(ref=payload['deployment'][
+                                                                         'ref'], environment=payload['deployment']['environment'], status=payload['deployment_status']['state'])
+        response['message'] = message
 
     elif data['type'] == "DownloadEvent":
-        response['message'] = "Lorem"
+        message = "Download event created with file name '{file_name}'".format(
+            file_name=payload['download']['name'])
+        response['message'] = message
     elif data['type'] == "FollowEvent":
-        response['message'] = "Lorem"
+        message = "Followed user {username}".format(
+            username=payload['target']['login'])
+        response['message'] = message
     elif data['type'] == "ForkEvent":
-        response['message'] = "Lorem"
+        message = "Forked a repository to {repo_name}".format(
+            repo_name=payload['forkee']['full_name'])
+        response['message'] = message
     elif data['type'] == "ForkApplyEvent":
-        response['message'] = "Lorem"
+        message = "Patch applied in the Fork Queue on branch {branch}".format(
+            branch=payload['head'])
+        response['message'] = message
     elif data['type'] == "GistEvent":
-        response['message'] = "Lorem"
+        message = "{action} a gist".format(action=payload['action'])
+        response['message'] = message
+        response['message_url'] = payload['gist']['html_url']
     elif data['type'] == "GollumEvent":
-        response['message'] = "Lorem"
+        response['message'] = "Created/Updated a Wiki Page"
     elif data['type'] == "IssueCommentEvent":
-        response['message'] = "Lorem"
+        message = "{action} a comment on issue #{number} with title '{title}'".format(
+            action=payload['action'].title(), number=payload['issue']['number'], title=payload['issue']['title'])
+        response['message'] = message
+        response['message_url'] = payload['comment']['html_url']
     elif data['type'] == "IssuesEvent":
-        response['message'] = "Lorem"
+        message = "{action} an issue #{number} with title '{title}'".format(action=payload[
+                                                                            'action'].title(), number=payload['issue']['number'], title=payload['issue']['title'])
+        response['message'] = message
+        response['message_url'] = payload['issue']['html_url']
     elif data['type'] == "LabelEvent":
-        response['message'] = "Lorem"
+        message = "{action} a label named {label_name}".format(
+            action=payload['action'].title(), label_name=payload['label']['name'])
+        response['message'] = message
     elif data['type'] == "MemberEvent":
-        response['message'] = "Lorem"
+        response['message'] = "Added to repository as a collaborator"
     elif data['type'] == "MembershipEvent":
-        response['message'] = "Lorem"
+        action = payload['action']
+
+        if action == "added":
+            message = "{name} was {action} to team {team_name}".format(
+                name=payload['member']['login'], action=action, team_name=payload['team']['name'])
+        else:
+            message = "{name} was {action} from team {team_name}".format(
+                name=payload['member']['login'], action=action, team_name=payload['team']['name'])
+        response['message'] = message
     elif data['type'] == "MilestoneEvent":
-        response['message'] = "Lorem"
+        message = "{action} a milestone #{number}".format(
+            action=payload['action'], number=payload['milestone']['number'])
+        response['message'] = message
+        response['message_url'] = payload['milestone']['html_url']
     elif data['type'] == "PageBuildEvent":
-        response['message'] = "Lorem"
+        if payload['build']['error']['message'] is not None:
+            result = "Error occured with message: {message}".format(
+                message=payload['build']['error']['message'])
+        else:
+            result = "Build was successful."
+        message = "Tried building Github pages. {result}".format(result=result)
+        response['message'] = message
     elif data['type'] == "PublicEvent":
-        response['message'] = "Lorem"
+        response['message'] = "Open Sourced the repository"
     elif data['type'] == "PullRequestEvent":
         message = "{action} pull request #{number}".format(
             action=payload['action'].title(), number=payload['number'])
