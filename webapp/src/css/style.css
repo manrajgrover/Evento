@@ -3,11 +3,20 @@
   transition: 2s;
 }
 
+.login {
+  position: relative;
+  right: 5px;
+}
+
 .brand-navbar {
   position: relative;
-  top: -5px;
+  width: 45px;
 }
 
 .margin-10 {
   margin: 10px;
+}
+
+.logo {
+  width: 100%;
 }

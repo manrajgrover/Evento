@@ -65,7 +65,7 @@ app.run(/*@ngInject*/function($rootScope, $timeout, $location, sessionService){
 app.controller("homeController", /*@ngInject*/function($scope) {
 
   $scope.login = () => {
-    window.location.replace("login");
+    window.location.replace("https://github.com/login/oauth/authorize?scope=user,repo&client_id=51c7b112510acc53c35d");
   }
 
 });
