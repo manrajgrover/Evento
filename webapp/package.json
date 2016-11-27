@@ -1,5 +1,5 @@
 {
-  "name": "github-app",
+  "name": "evento",
   "version": "1.0.0",
   "description": "",
   "main": "src/js/script.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ManrajGrover/github-app.git"
+    "url": "git+https://github.com/ManrajGrover/Evento.git"
   },
   "author": "",
   "license": "MIT",
@@ -33,7 +33,7 @@
     "ng-infinite-scroll": "^1.3.0"
   },
   "bugs": {
-    "url": "https://github.com/ManrajGrover/github-app/issues"
+    "url": "https://github.com/ManrajGrover/Evento/issues"
   },
-  "homepage": "https://github.com/ManrajGrover/github-app#readme"
+  "homepage": "https://github.com/ManrajGrover/Evento#readme"
 }
