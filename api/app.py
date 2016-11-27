@@ -20,7 +20,7 @@ with open("application.yml", 'r') as config:
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html', client_id=CONFIG['client_id'])
+    return render_template('index.html')
 
 
 @app.route('/login', methods=['GET'])
@@ -273,7 +273,7 @@ def getEventDetails(data):
 
         message = "{action} watching the repository".format(
             action=payload['action'].title())
-    
+
     response['message'] = message
     response['message_url'] = message_url
     return response
@@ -294,8 +294,6 @@ def events():
 
         page = request.args.get('page') if request.args.get(
             'page') is not None else 1
-
-        print page
 
         events_url = 'https://api.github.com/users/{username}/events?page={page}'.format(
             username=username, page=page)
