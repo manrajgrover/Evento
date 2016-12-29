@@ -32,4 +32,4 @@
 * Gulp v3.9.1
 
 ## License
-MIT © [Manraj Singh](https://github.com/ManrajGrover/Evento/blob/master/LICENSE)
+[MIT](https://github.com/ManrajGrover/Evento/blob/master/LICENSE) © Manraj Singh
