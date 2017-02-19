@@ -2,8 +2,8 @@ import requests
 import yaml
 import json
 import urlparse
-from pprint import pprint
-from flask import Flask, Response, render_template, request, redirect, url_for, session
+from flask import Flask, Response, render_template, request, redirect, \
+    url_for, session
 
 app = Flask(__name__, template_folder="../webapp",
             static_folder="../webapp/dist")
@@ -101,18 +101,18 @@ def callback():
                         mimetype="application/json")
 
 
-def getEventDetails(data):
+def get_event_details(data):
     response = {}
 
-    response[
-        'user_url'] = "https://github.com/{user}".format(user=data['actor']['login'])
+    response['user_url'] = \
+        "https://github.com/{user}".format(user=data['actor']['login'])
     response['image'] = data['actor']['avatar_url']
 
     repository = data['repo']['name']
 
     response['repository'] = repository
-    response[
-        'repository_url'] = "https://github.com/{repository}".format(repository=repository)
+    response['repository_url'] = \
+        "https://github.com/{repository}".format(repository=repository)
     response['timestamp'] = data['created_at']
 
     try:
@@ -139,11 +139,16 @@ def getEventDetails(data):
     elif data['type'] == "DeploymentEvent":
 
         message = "Deployed {ref} code to {environment}".format(
-            ref=payload['deployment']['ref'], environment=payload['deployment']['environment'])
+            ref=payload['deployment']['ref'],
+            environment=payload['deployment']['environment']
+        )
 
     elif data['type'] == "DeploymentStatusEvent":
-        message = "Deployed {ref} to {environment} with {status}".format(ref=payload['deployment'][
-                                                                         'ref'], environment=payload['deployment']['environment'], status=payload['deployment_status']['state'])
+        message = "Deployed {ref} to {environment} with {status}".format(
+            ref=payload['deployment']['ref'],
+            environment=payload['deployment']['environment'],
+            status=payload['deployment_status']['state']
+        )
 
     elif data['type'] == "DownloadEvent":
 
@@ -177,20 +182,32 @@ def getEventDetails(data):
 
     elif data['type'] == "IssueCommentEvent":
 
-        message = "{action} a comment on issue #{number} with title '{title}'".format(
-            action=payload['action'].title(), number=payload['issue']['number'], title=payload['issue']['title'])
+        message_temp = "{action} a comment on issue " + \
+                       "#{number} with title '{title}'"
+
+        message = \
+            message_temp.format(
+                action=payload['action'].title(),
+                number=payload['issue']['number'],
+                title=payload['issue']['title']
+            )
         message_url = payload['comment']['html_url']
 
     elif data['type'] == "IssuesEvent":
 
-        message = "{action} an issue #{number} with title '{title}'".format(action=payload[
-                                                                            'action'].title(), number=payload['issue']['number'], title=payload['issue']['title'])
+        message = "{action} an issue #{number} with title '{title}'".format(
+            action=payload['action'].title(),
+            number=payload['issue']['number'],
+            title=payload['issue']['title']
+        )
         message_url = payload['issue']['html_url']
 
     elif data['type'] == "LabelEvent":
 
         message = "{action} a label named {label_name}".format(
-            action=payload['action'].title(), label_name=payload['label']['name'])
+            action=payload['action'].title(),
+            label_name=payload['label']['name']
+        )
 
     elif data['type'] == "MemberEvent":
 
@@ -202,10 +219,16 @@ def getEventDetails(data):
 
         if action == "added":
             message = "{name} was {action} to team {team_name}".format(
-                name=payload['member']['login'], action=action, team_name=payload['team']['name'])
+                name=payload['member']['login'],
+                action=action,
+                team_name=payload['team']['name']
+            )
         else:
             message = "{name} was {action} from team {team_name}".format(
-                name=payload['member']['login'], action=action, team_name=payload['team']['name'])
+                name=payload['member']['login'],
+                action=action,
+                team_name=payload['team']['name']
+            )
 
     elif data['type'] == "MilestoneEvent":
 
@@ -236,13 +259,17 @@ def getEventDetails(data):
     elif data['type'] == "PullRequestReviewEvent":
 
         message = "{action} a pull request review on #{number}".format(
-            action=payload['action'].title(), number=payload['pull_request']['number'])
+            action=payload['action'].title(),
+            number=payload['pull_request']['number']
+        )
         message_url = payload['review']['html_url']
 
     elif data['type'] == "PullRequestReviewCommentEvent":
 
         message = "{action} a comment on pull request #{number}".format(
-            action=payload['action'].title(), number=payload['pull_request']['number'])
+            action=payload['action'].title(),
+            number=payload['pull_request']['number']
+        )
         message_url = payload['comment']['html_url']
 
     elif data['type'] == "PushEvent":
@@ -267,7 +294,9 @@ def getEventDetails(data):
     elif data['type'] == "TeamAddEvent":
 
         message = "{repository} was added to {team}".format(
-            repository=payload['repository']['full_name'], team=payload['team']['name'])
+            repository=payload['repository']['full_name'],
+            team=payload['team']['name']
+        )
 
     elif data['type'] == "WatchEvent":
 
@@ -281,8 +310,8 @@ def getEventDetails(data):
 
 @app.route('/events', methods=['GET'])
 def events():
-
-    if (session.get('username') is not None) and (session.get('name') is not None):
+    if (session.get('username') is not None) and \
+       (session.get('name') is not None):
         username = session['username']
         access_token = session['token']
 
@@ -295,7 +324,8 @@ def events():
         page = request.args.get('page') if request.args.get(
             'page') is not None else 1
 
-        events_url = 'https://api.github.com/users/{username}/events?page={page}'.format(
+        ev_temp = 'https://api.github.com/users/{username}/events?page={page}'
+        events_url = ev_temp.format(
             username=username, page=page)
         result = requests.get(events_url, headers=header)
 
@@ -306,7 +336,7 @@ def events():
             resp = []
 
             for event in events:
-                resp.append(getEventDetails(event))
+                resp.append(get_event_details(event))
 
             return Response(response=json.dumps(resp),
                             status=200,
