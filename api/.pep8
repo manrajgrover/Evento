@@ -1,2 +1,2 @@
 [flake8]
-ignore=D400,D205,D401,D200
+ignore=D103,D100
